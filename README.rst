@@ -1,14 +1,14 @@
 phpMyAdmin on DotCloud
 ======================
 
-To deploy `phpMyAdmin <http://www.phpmyadmin.net/>`_ on DotCloud:
+To deploy `phpMyAdmin <http://www.phpmyadmin.net/>`_ on DotCloud::
 
     git clone git://github.com/dotcloud/phpmyadmin-on-dotcloud
     dotcloud push phpmyadmin phpmyadmin-on-dotcloud
 
 At the end of the build you can visit the url displayed and login into
 phpMyAdmin. You will need the password for the root user of the MySQL
-database to login, find it out with:
+database to login, find it out with::
 
     dotcloud info phpmyadmin.db
 
