@@ -1,0 +1,6 @@
+pma:
+    type: php
+db:
+    type: mysql
+sessions:
+    type: mysql

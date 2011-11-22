@@ -1,0 +1,58 @@
+#!/bin/sh
+
+name="phpMyAdmin"
+url="http://sourceforge.net/projects/phpmyadmin/files/latest/download?source=files"
+
+install_dir=~/data/pma/
+
+msg() {
+    echo "$name: $*." >&2
+}
+
+die() {
+    [ $# -ne 0 ] && msg $*
+
+    exit 1
+}
+
+install_pma() {
+    if [ ! -d $install_dir ] ; then
+        msg "downloading and installing the latest version"
+
+        [ -d $install_dir ] || mkdir -p $install_dir
+        curl -sSL --retry 3 $url | tar --strip-components=1 -jxf - -C $install_dir
+
+        [ $? -ne 0 ] && die "installation failed"
+    else
+        msg "phpMyAdmin already installed"
+    fi
+}
+
+configure_pma() {
+    if [ ! -f $install_dir/config.inc.php ] ; then
+        msg "installing configuration files"
+
+        rm -rf $install_dir/config
+
+        secret=`dd if=/dev/urandom of=/dev/stdout bs=32 count=1 2>/dev/null \
+                | shasum | cut '-d ' -f 1`
+        sed -i ~/current/config.inc.php.in -e "s/@BLOWFISH_SECRET@/$secret/"
+        install -m 440 ~/current/config.inc.php.in $install_dir/config.inc.php
+
+        cp ~/current/nginx.conf ~/current/robots.txt $install_dir/
+    else
+        msg "already configured"
+    fi
+}
+
+pivot_current() {
+    msg "rewriting ~/current to point to the install directory"
+
+    ln -snf $install_dir ~/current
+}
+
+install_pma
+configure_pma
+pivot_current
+
+exit 0
